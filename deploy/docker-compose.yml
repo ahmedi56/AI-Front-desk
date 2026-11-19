@@ -1,0 +1,86 @@
+# Run from this folder:  docker compose --env-file ../.env up -d
+# Only Caddy is reachable from the internet (ports 80 and 443). The database and the app are on a private network.
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: frontdesk_owner
+      POSTGRES_PASSWORD: ${DB_OWNER_PASSWORD}
+      POSTGRES_DB: frontdesk
+      APP_DB_PASSWORD: ${DB_APP_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./postgres-init.sh:/docker-entrypoint-initdb.d/00-roles.sh:ro
+    networks: [dbnet]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U frontdesk_owner -d frontdesk"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    build: {context: .., dockerfile: Dockerfile}
+    command: ["python", "-m", "app.migrate"]
+    env_file: ../.env
+    environment:
+      DATABASE_ADMIN_URL: postgresql://frontdesk_owner:${DB_OWNER_PASSWORD}@db:5432/frontdesk
+      DATABASE_URL: postgresql://frontdesk_app:${DB_APP_PASSWORD}@db:5432/frontdesk
+    depends_on: {db: {condition: service_healthy}}
+    networks: [dbnet]
+    restart: "no"
+
+  app:
+    build: {context: .., dockerfile: Dockerfile}
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgresql://frontdesk_app:${DB_APP_PASSWORD}@db:5432/frontdesk
+    depends_on:
+      db: {condition: service_healthy}
+      migrate: {condition: service_completed_successfully}
+    networks: [dbnet, web]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+
+  worker:
+    build: {context: .., dockerfile: Dockerfile}
+    command: ["python", "-m", "app.worker"]
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgresql://frontdesk_app:${DB_APP_PASSWORD}@db:5432/frontdesk
+    depends_on:
+      db: {condition: service_healthy}
+      migrate: {condition: service_completed_successfully}
+    networks: [dbnet, web]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck: {disable: true}
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: ${DOMAIN}
+      ADMIN_ALLOWED_IPS: ${ADMIN_ALLOWED_IPS:-0.0.0.0/0 ::/0}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [app]
+    networks: [web]
+
+networks:
+  dbnet: {internal: true}   # the database can only be reached from the app, never from the internet
+  web: {}
+
+volumes:
+  dbdata:
+  caddy_data:
+  caddy_config:

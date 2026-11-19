@@ -1,0 +1,33 @@
+<!doctype html>
+{% from "_icons.html" import icon %}
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}AI Front Desk{% endblock %} | AI Front Desk</title><link rel="stylesheet" href="{{ static_url('app.css') }}"><link rel="icon" href="{{ static_url('favicon.svg') }}" type="image/svg+xml"></head>
+<body class="{% block body_class %}{% endblock %}">
+{% block page %}
+{% if p %}
+{% set here = request.url.path %}
+<div class="shell">
+<aside class="side">
+  <div class="brand"><span class="brand-mark">{{ (b.name if b else 'Admin')[:1]|upper }}</span>
+    <span class="brand-name">{{ b.name if b else 'Platform admin' }}<span class="brand-sub">AI Front Desk</span></span></div>
+  <nav class="nav" aria-label="Main">
+  {% if p.role == 'owner' %}
+    {% for href, label, ic in [('/', 'Today', 'today'), ('/inbox', 'Inbox', 'inbox'), ('/appointments', 'Appointments', 'appointments'), ('/leads', 'Leads', 'leads'), ('/usage', 'Costs', 'costs'), ('/settings', 'Settings', 'settings')] %}
+    <a href="{{ href }}"{% if here == href or (href != '/' and here.startswith(href)) %} aria-current="page"{% endif %}>{{ icon(ic) }}{{ label }}</a>
+    {% endfor %}
+  {% else %}
+    <a href="/admin"{% if here.startswith('/admin') %} aria-current="page"{% endif %}>{{ icon('businesses') }}Businesses</a>
+  {% endif %}
+    <a href="/account"{% if here.startswith('/account') %} aria-current="page"{% endif %}>{{ icon('account') }}My account</a>
+  </nav>
+  <div class="side-foot">
+    <form method="post" action="/logout"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="secondary small" type="submit">Log out</button></form>
+  </div>
+</aside>
+<div class="content"><main>{% block body %}{% endblock %}</main></div>
+</div>
+{% else %}
+<main>{{ self.body() }}</main>
+{% endif %}
+{% endblock %}
+</body></html>

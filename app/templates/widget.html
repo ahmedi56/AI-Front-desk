@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chat with {{ b.name }}</title><link rel="stylesheet" href="{{ static_url('app.css') }}"><link rel="icon" href="{{ static_url('favicon.svg') }}" type="image/svg+xml"></head>
+<body class="widget" data-slug="{{ slug }}" data-hello="Hi! I'm the AI assistant for {{ b.name }}. How can I help?">
+<div class="chat">
+  <header class="chat-head">
+    <span class="chat-avatar" aria-hidden="true">{{ b.name[:1]|upper }}</span>
+    <div><div class="chat-name">{{ b.name }}</div><div class="chat-state"><i aria-hidden="true"></i>AI assistant, replies in seconds</div></div>
+    <button class="chat-close" id="close" type="button" aria-label="Close chat">&times;</button>
+  </header>
+  <p class="chat-note">You are chatting with an AI assistant. Ask for a person at any time.</p>
+  {% if demo %}<p class="chat-note">Demo only. This business is not real, and nothing you book here is real.</p>{% endif %}
+  <div id="log" role="log" aria-live="polite"></div>
+  <div class="chips" id="chips">
+    <button type="button" data-text="I'd like to book an appointment.">Book a visit</button>
+    <button type="button" data-text="What are your prices?">Prices</button>
+    <button type="button" data-text="What are your opening hours?">Opening hours</button>
+    <button type="button" class="urgent" data-text="I have an urgent problem and need help today.">Urgent problem</button>
+  </div>
+  <form id="f" class="chat-form" autocomplete="off"><input id="t" maxlength="1000" placeholder="Type your message" aria-label="Message"><button id="send" type="submit">Send</button></form>
+  <div class="chat-foot">For a fire, gas smell or injury, call 911.</div>
+</div>
+<script src="{{ static_url('chat.js') }}"></script></body></html>

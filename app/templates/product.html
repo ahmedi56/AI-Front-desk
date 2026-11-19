@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Front Desk for home-service businesses</title>
+<meta name="description" content="An AI front desk for plumbers, HVAC and home-service businesses. It answers your website chat day and night, books visits and sends emergencies straight to you.">
+<link rel="stylesheet" href="{{ static_url('product.css') }}"><link rel="icon" href="{{ static_url('favicon.svg') }}" type="image/svg+xml"></head>
+<body>
+<header class="pp-top">
+  <div class="pp-wrap pp-top-in">
+    <div class="pp-brand"><span class="pp-mark">AI</span><span>AI Front Desk</span></div>
+    <a class="pp-top-link" href="#pilot">See the 30-day pilot</a>
+  </div>
+</header>
+
+<main>
+<section class="pp-hero">
+  <div class="pp-wrap pp-hero-in">
+    <div class="pp-hero-text">
+      <h1>Your website answers customers while you're on a job.</h1>
+      <p class="pp-lead">An AI front desk for plumbers, HVAC and home-service businesses. It answers your website chat day and night, books visits into your opening hours, and sends emergencies straight to you.</p>
+      <div class="pp-actions">
+        {% if demo_slug %}<a class="pp-btn pp-btn-green" href="/widget/{{ demo_slug }}?demo=1" data-fd-open>Try the live demo</a>{% endif %}
+        {% if video_url %}<a class="pp-btn {{ 'pp-btn-line' if demo_slug else 'pp-btn-green' }}" href="{{ video_url }}" rel="noopener">Watch the 2-minute demo</a>{% endif %}
+        {% if email %}<a class="pp-btn pp-btn-line" href="mailto:{{ email }}">Book a 15-minute call</a>
+        {% else %}<a class="pp-btn pp-btn-line" href="#contact">Book a 15-minute call</a>{% endif %}
+      </div>
+    </div>
+
+    <div class="pp-chat" role="img" aria-label="A sample website chat where the AI books a drain cleaning">
+      <div class="pp-chat-head">
+        <span class="pp-avatar">P</span>
+        <div><div class="pp-chat-name">[Your Plumbing Co.]</div><div class="pp-chat-sub">AI assistant, replies in seconds</div></div>
+      </div>
+      <div class="pp-chat-note">You are chatting with an AI assistant. Ask for a person at any time.</div>
+      <div class="pp-chat-log">
+        <div class="pp-me">My kitchen sink is backing up. Can someone come tomorrow?</div>
+        <div class="pp-ai">Yes. Tomorrow I have 9:00 AM or 1:30 PM for drain cleaning ($149). Which works for you?</div>
+        <div class="pp-me">9 is great. I'm Maria.</div>
+        <div class="pp-ai">You're booked for drain cleaning tomorrow at 9:00 AM, Maria. The owner has been notified.</div>
+        <div class="pp-pill">Booking added to your dashboard</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pp-wrap pp-does">
+  <h2>What it does for you</h2>
+  <p class="pp-sub">It handles the customers who contact you when you can't pick up, and hands you everything else.</p>
+  <div class="pp-features">
+    <div>
+      <svg class="pp-ico pp-ico-blue" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v14H4z M4 10h16 M8 3v4 M16 3v4"></path></svg>
+      <h3>Books real appointments</h3>
+      <p>Offers free times from your opening hours and books them. Two customers can never get the same slot.</p>
+    </div>
+    <div>
+      <svg class="pp-ico pp-ico-red" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 16H3z M12 10v4 M12 17h.01"></path></svg>
+      <h3>Sends emergencies to you</h3>
+      <p>Gas smell, fire or smoke: it tells the customer to call 911 and alerts you right away.</p>
+    </div>
+    <div>
+      <svg class="pp-ico pp-ico-green" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 19c0-3-2.5-5-6-5s-6 2-6 5 M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z M19 8v6 M16 11h6"></path></svg>
+      <h3>Saves every lead</h3>
+      <p>When it can't finish a request, it saves the name, number and need so you can call back.</p>
+    </div>
+    <div>
+      <svg class="pp-ico pp-ico-navy" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v9 M6.3 7.3a8 8 0 1 0 11.4 0"></path></svg>
+      <h3>Off with one click</h3>
+      <p>A kill switch on your dashboard. When it's off, every customer is told a person will get back to them.</p>
+    </div>
+  </div>
+</section>
+
+<section class="pp-wrap pp-never-wrap">
+  <div class="pp-never">
+    <div class="pp-never-text">
+      <h2>What it will never do</h2>
+      <p>Your name is on every answer, so these rules are built in. A customer's message cannot change them.</p>
+    </div>
+    <ul class="pp-never-list">
+      <li><span class="pp-x" aria-hidden="true">✕</span><span>Invent a price. It only quotes the prices you write.</span></li>
+      <li><span class="pp-x" aria-hidden="true">✕</span><span>Pretend to be human. It says it's an AI.</span></li>
+      <li><span class="pp-x" aria-hidden="true">✕</span><span>Give repair advice for gas, fire or injuries.</span></li>
+      <li><span class="pp-x" aria-hidden="true">✕</span><span>Confirm a booking the calendar didn't accept.</span></li>
+      <li><span class="pp-x" aria-hidden="true">✕</span><span>Ask for card details or payments.</span></li>
+      <li><span class="pp-x" aria-hidden="true">✕</span><span>Show one customer another customer's details.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="pilot" class="pp-wrap pp-pilot">
+  <div class="pp-pilot-text">
+    <h2>The 30-day pilot</h2>
+    <p class="pp-sub">Start with your website chat. Phone answering and texts come in month 2, after we test them together with your own accounts.</p>
+    <ol class="pp-steps">
+      <li><span class="pp-step">1</span><span><strong>15-minute call.</strong> You see the demo with your own business name.</span></li>
+      <li><span class="pp-step">2</span><span><strong>You send your details.</strong> Services, prices, opening hours and common questions.</span></li>
+      <li><span class="pp-step">3</span><span><strong>We set it up and test it.</strong> Two days of testing before anything goes on your site.</span></li>
+      <li><span class="pp-step">4</span><span><strong>One line on your website.</strong> The chat bubble appears, and you watch the results on your dashboard.</span></li>
+    </ol>
+  </div>
+  <div class="pp-price">
+    <div class="pp-price-label">Setup, one time</div>
+    <div class="pp-price-big">{{ setup_price or '[$300]' }}</div>
+    <div class="pp-price-label pp-price-gap">Support, from month 2</div>
+    <div class="pp-price-mid">{{ monthly_price or '[$99]' }} <span>per month</span></div>
+    <p>You pay the AI and phone companies directly, on accounts in your name. You see every cost on your dashboard. Stop any time.</p>
+    {% if email %}<a class="pp-btn pp-btn-green pp-btn-block" href="mailto:{{ email }}">Book a 15-minute call</a>
+    {% else %}<span class="pp-btn pp-btn-green pp-btn-block">Book a 15-minute call: [YOUR EMAIL]</span>{% endif %}
+  </div>
+</section>
+
+<section id="contact" class="pp-wrap pp-contact-wrap">
+  <div class="pp-contact">
+    <div class="pp-contact-text">
+      <h2>Ask for your demo</h2>
+      <p>Tell me about your business. I will reply within one business day with a demo that uses your own business name.</p>
+      {% if demo_slug %}<p>Want to see it first? <a href="/widget/{{ demo_slug }}?demo=1" data-fd-open>Chat with the demo plumber now.</a></p>{% endif %}
+    </div>
+    <form class="pp-form" method="post" action="/product/lead">
+      {% if sent %}<p class="pp-flash pp-flash-ok" role="status">Thank you. I will contact you within one business day.</p>{% endif %}
+      {% if error %}<p class="pp-flash pp-flash-err" role="alert">{{ error }}</p>{% endif %}
+      <div class="pp-field"><label for="pf-name">Your name</label><input id="pf-name" name="name" required maxlength="120" autocomplete="name"></div>
+      <div class="pp-field"><label for="pf-business">Business name</label><input id="pf-business" name="business" required maxlength="160" autocomplete="organization"></div>
+      <div class="pp-field"><label for="pf-email">Email</label><input id="pf-email" name="email" type="email" required maxlength="200" autocomplete="email"></div>
+      <div class="pp-field"><label for="pf-phone">Phone <span>(optional)</span></label><input id="pf-phone" name="phone" type="tel" maxlength="40" autocomplete="tel"></div>
+      <div class="pp-field pp-field-wide"><label for="pf-website">Website <span>(optional)</span></label><input id="pf-website" name="website" maxlength="200" autocomplete="url"></div>
+      <div class="pp-field pp-field-wide"><label for="pf-message">Message <span>(optional)</span></label><textarea id="pf-message" name="message" rows="3" maxlength="1000"></textarea></div>
+      <div class="pp-trap" aria-hidden="true"><label for="pf-company-url">Leave this field empty</label><input id="pf-company-url" name="company_url" tabindex="-1" autocomplete="off"></div>
+      <div class="pp-field-wide pp-form-end"><button type="submit">Send</button><span>I will only use this to reply to you. No marketing texts or calls.</span></div>
+    </form>
+  </div>
+</section>
+
+<section class="pp-faq">
+  <div class="pp-wrap pp-faq-in">
+    <h2>Questions owners ask</h2>
+    <div class="pp-faq-grid">
+      <div><h3>Will customers know it's AI?</h3><p>Yes. It says so at the start, and they can ask for a person at any time.</p></div>
+      <div><h3>What if it doesn't know an answer?</h3><p>It says someone will follow up and saves the lead for you. It never guesses.</p></div>
+      <div><h3>Is my customers' data safe?</h3><p>Each business's data is kept apart from every other business. Chats are deleted after the number of days you choose.</p></div>
+      <div><h3>Do I need a new website?</h3><p>No. You or your web person paste one line into your current website.</p></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="pp-foot">
+  <div class="pp-wrap pp-foot-in">
+    <span>AI Front Desk, by {{ owner_name or '[Your name]' }}</span>
+    {% if email %}<a href="mailto:{{ email }}">{{ email }}</a>{% else %}<span>[YOUR EMAIL]</span>{% endif %}
+  </div>
+</footer>
+{% if demo_slug %}<script src="{{ static_url('embed.js') }}" data-business="{{ demo_slug }}" data-label="Try the live demo" data-demo async></script>{% endif %}
+</body></html>

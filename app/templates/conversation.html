@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block title %}Conversation{% endblock %}
+{% block body %}
+<p><a href="/inbox">&larr; Inbox</a></p>
+<div class="page-head"><h1>{{ cust.name or cust.phone or 'Web visitor' }} <span class="tag">{{ conv.channel }}</span></h1></div>
+<div class="card">
+{% if conv.status == 'handed_off' %}<p><span class="tag warn">Needs a person</span> {{ conv.handoff_reason }}</p>{% endif %}
+{% if conv.summary %}<p><b>Summary:</b> {{ conv.summary }}</p>{% endif %}
+<div class="meta"><span>AI cost: <span class="num">${{ '%.4f'|format(conv.cost_usd) }}</span></span><span>Steps: {{ conv.steps_used }}</span>{% if cust.sms_opt_out %}<span class="tag off">sent STOP</span>{% endif %}</div>
+</div>
+<div class="card thread">
+{% for m in msgs %}<div class="msg {{ m.role }}"><small>{{ {'agent': 'AI assistant', 'customer': 'Customer'}.get(m.role, m.role) }}, {{ m.created_at|localdt(b.timezone) }}</small>{{ m.text }}</div>
+{% else %}<p class="muted">No messages (they may have been deleted after the retention period).</p>{% endfor %}
+</div>{% endblock %}

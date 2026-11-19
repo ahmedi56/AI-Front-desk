@@ -1,0 +1,23 @@
+{$DOMAIN} {
+	encode gzip
+	request_body {
+		max_size 1MB
+	}
+	header {
+		-Server
+		X-Content-Type-Options nosniff
+	}
+	# the API docs page is never public
+	@docs path /docs /docs/* /openapi.json /redoc
+	respond @docs 404
+	# The admin pages (only you) can be limited to your own IP address. Set ADMIN_ALLOWED_IPS in .env, for example "203.0.113.7".
+	# If you leave it empty, everyone can REACH the admin login (it is still protected by password + 2-step login).
+	@admin_blocked {
+		path /admin /admin/*
+		not remote_ip {$ADMIN_ALLOWED_IPS:0.0.0.0/0 ::/0}
+	}
+	respond @admin_blocked 404
+	reverse_proxy app:8000 {
+		header_up X-Forwarded-Proto https
+	}
+}

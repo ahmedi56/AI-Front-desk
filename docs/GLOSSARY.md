@@ -1,0 +1,44 @@
+# Glossary (simple English)
+
+- **Agent**: a program that talks to people using AI and can do actions (like book a time).
+- **API**: a door a program uses to talk to another program.
+- **API key**: a secret password for an API. Never share it.
+- **A2P 10DLC**: US carrier registration needed for business texting. Without approval, texts get blocked.
+- **Adapter**: a small piece of code that plugs in an outside service, so we can replace it later.
+- **Argon2**: a way to store passwords so that stealing the database does not reveal them.
+- **Audit log**: a diary of important actions (who did what). Cannot be edited by the app.
+- **Backup**: a copy of the data. Test it by restoring it.
+- **Caddy**: the front-door program. It handles https certificates.
+- **Canary word**: a secret word hidden in the instructions. If it shows up in a reply, instructions leaked, and we block the reply.
+- **CSRF**: an attack where another website tricks your browser into sending a form. A hidden token stops it.
+- **CSP (content policy)**: a rule telling the browser to run only our own scripts.
+- **Docker / container**: a sealed box with the program and everything it needs.
+- **Env variable / `.env`**: a file with secrets, kept only on the server.
+- **Fernet**: a standard way to encrypt small secrets.
+- **Handoff**: the agent stops and a human takes over.
+- **Idempotent**: doing it twice has the same result as once (a retried message does not book twice).
+- **Kill switch**: one button that turns the agent off for a business.
+- **MCP**: a standard way to give an AI tool access to a program's functions. We use it for Claude Code to look at one business's data safely.
+- **Multi-tenant**: many businesses use one system, each separated.
+- **Prompt**: the instructions given to the AI.
+- **Prompt injection**: a customer writing "ignore your rules" to trick the AI.
+- **Quiet hours**: time when we do not send texts (9 pm to 8 am in the business's time).
+- **RLS (Row Level Security)**: the database only shows each business its own rows.
+- **STOP / HELP / START**: words every US text service must obey: STOP ends texts, HELP gives help, START turns them on again.
+- **TCPA**: US law on calls and texts.
+- **TOTP / 2-step login**: a 6-digit code from an authenticator app.
+- **VPS**: a rented server.
+- **Webhook**: another service calls our address to tell us something happened (a text arrived).
+- **Worker**: a background program that does timed jobs (reminders, reports).
+- **Embed code**: the one line a client pastes into their website to show our chat button.
+- **Encrypted**: locked with a secret key, so someone who copies the database cannot read it.
+- **Per-client AI key**: each client's own free AI account key, so each client has its own usage and limits.
+- **Setup checklist**: the list on the Today page of what a new client still has to do.
+- **Guard**: a check on the AI's answer before the customer sees it (for example: no invented price or phone number).
+- **Rate limit**: the most requests a service accepts in one minute. A free AI account says "slow down" above it.
+- **Reason code**: a short label for an error, such as `groq:429` (the AI service was busy).
+- **Self-hosted font**: a font file kept on our own server, not loaded from another company.
+- **Prospect**: a business owner who may become your client (for example, someone who filled in the form on the product page).
+- **Trap field (honeypot)**: a hidden form field that only robots fill in. If it has text, we save nothing.
+- **Backup key**: a second AI key, from a different company, used only when the main one is busy or down.
+- **SMTP**: the standard way a program sends email through a mail company. The weekly report needs it.

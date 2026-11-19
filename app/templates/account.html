@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% block title %}My account{% endblock %}
+{% block body %}<div class="page-head"><div><h1>My account</h1><p class="muted">Your password and 2-step login.</p></div></div><div class="narrow-wide">
+{% if message %}<div class="flash ok">{{ message }} <a href="{{ '/admin' if p.role == 'admin' else '/' }}">Go to {{ 'Businesses' if p.role == 'admin' else 'Today' }}</a></div>{% endif %}{% if error %}<div class="flash err">{{ error }}</div>{% endif %}
+{% if u.must_change_password %}<div class="flash err">You are using a temporary password. Choose your own password now to continue.</div>{% endif %}
+{% if must_2fa %}<div class="flash err">Platform admins must turn on 2-step login before using the admin pages.</div>{% endif %}
+<div class="card"><h2>Change password</h2>
+<form method="post" action="/account/password"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<label>Current password</label><input name="current_password" type="password" required autocomplete="current-password">
+<label>New password <span class="hint">(12 or more characters. A few random words is good.)</span></label><input name="new_password" type="password" required minlength="12" autocomplete="new-password">
+<label>New password again</label><input name="confirm_password" type="password" required minlength="12" autocomplete="new-password">
+<p><button type="submit">Change password</button></p></form></div>
+<div class="card"><h2>2-step login</h2>
+{% if u.totp_enabled %}
+<p><span class="tag ok">ON</span> Login needs your password and a 6-digit code from your authenticator app.</p>
+<form method="post" action="/account/2fa/disable"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<label>Password</label><input name="password" type="password" required><label>Current 6-digit code</label><input name="code" inputmode="numeric" required>
+<p><button class="secondary" type="submit">Turn off</button></p></form>
+{% elif pending_secret %}
+<p>1. Open an authenticator app on your phone (for example Google Authenticator, Microsoft Authenticator, or Aegis).<br>
+2. Add an account by typing this key by hand: <code>{{ pending_secret }}</code> (type: time-based).<br>
+3. Type the 6-digit code the app shows:</p>
+<form method="post" action="/account/2fa/confirm"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<input name="code" inputmode="numeric" maxlength="8" required><p><button type="submit">Confirm and turn on</button></p></form>
+<p class="muted">Save this key in your password manager too. If you lose your phone, the platform admin can reset your login.</p>
+{% else %}
+<p><span class="tag warn">OFF</span> Adds a second lock: even someone who steals your password cannot log in.</p>
+<form method="post" action="/account/2fa/start"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button type="submit">Set up 2-step login</button></form>
+{% endif %}</div></div>{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% from "_icons.html" import icon %}{% block title %}Leads{% endblock %}
+{% block body %}
+<div class="page-head"><div><h1>Leads to follow up</h1><p class="muted">People the assistant could not finish with. Call them back.</p></div>
+<a class="btn secondary" href="/export/leads.csv">{{ icon('download') }}Download CSV</a></div>
+<div class="card table-wrap"><table><tr><th>When</th><th>Who</th><th>Need</th><th>Why saved</th><th></th></tr>
+{% for l in rows %}<tr><td class="when">{{ l.created_at|localdt(b.timezone) }}</td><td><b>{{ l.name or '' }}</b><br><span class="muted num">{{ l.phone or '' }}</span></td><td>{{ l.need }}{% if l.preferred_time %}<br><span class="muted">Preferred: {{ l.preferred_time }}</span>{% endif %}</td><td>{% if l.reason %}<span class="tag">{{ l.reason|replace('_', ' ') }}</span>{% endif %}</td>
+<td>{% if l.status == 'new' %}<form class="inline" method="post" action="/leads/{{ l.id }}/done"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="secondary small">Done</button></form>{% else %}<span class="tag ok">done</span>{% endif %}</td></tr>
+{% else %}<tr><td colspan="5" class="empty">No leads.</td></tr>{% endfor %}
+</table></div>{% endblock %}

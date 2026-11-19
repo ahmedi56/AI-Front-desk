@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ b.name }}</title><link rel="stylesheet" href="{{ static_url('app.css') }}"><link rel="icon" href="{{ static_url('favicon.svg') }}" type="image/svg+xml"></head>
+<body class="site">
+<div class="demo-ribbon">Demo website. This business is not real. It shows how the chat looks on a client's site.</div>
+<header class="site-top">
+  <span class="site-logo"><i aria-hidden="true"></i>{{ b.name }}</span>
+  <nav aria-label="Site"><a href="#services">Services</a><a href="#about">About</a><a href="#areas">Areas</a></nav>
+  <a class="site-call" href="#contact">(512) 555-0100</a>
+</header>
+<section class="site-hero"><div class="site-hero-in">
+  <h1>Leaks, clogs and water heaters, fixed today.</h1>
+  <p>Licensed local plumbers. Upfront prices. Book online in under a minute, day or night.</p>
+  <a class="btn" href="#contact">Book a plumber</a>
+</div></section>
+<section class="site-band" id="services">
+  <div><h3>Drain cleaning</h3><p>Kitchen, bath and main lines cleared and checked with a camera.</p></div>
+  <div><h3>Leak repair</h3><p>We find the leak, fix it and show you what went wrong.</p></div>
+  <div><h3>Water heaters</h3><p>Repair or replace, tank or tankless, often the same day.</p></div>
+</section>
+<section class="site-band" id="about">
+  <div><h3>Open late</h3><p>Our assistant answers every call and chat, even after hours.</p></div>
+  <div><h3>Fair prices</h3><p>You hear the price before we start. No surprises.</p></div>
+  <div id="areas"><h3>Near you</h3><p>Serving the city and nearby towns.</p></div>
+</section>
+<footer class="site-foot" id="contact">{{ b.name }}. Demo only.</footer>
+<script src="{{ static_url('embed.js') }}" data-business="{{ slug }}" data-label="Chat with us" async></script>
+</body></html>

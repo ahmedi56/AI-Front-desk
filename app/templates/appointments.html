@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% from "_icons.html" import icon %}{% block title %}Appointments{% endblock %}
+{% block body %}
+<div class="page-head"><div><h1>Appointments</h1><p class="muted">Booked by your assistant or by you.</p></div>
+<a class="btn secondary" href="/export/appointments.csv">{{ icon('download') }}Download CSV</a></div>
+<div class="card table-wrap"><table><tr><th>When</th><th>Customer</th><th>Service</th><th>Status</th><th></th></tr>
+{% for a in rows %}{% set cu = custs.get(a.customer_id) %}
+<tr><td class="when">{{ a.starts_at|localdt(b.timezone) }}</td><td><b>{{ cu.name or '' }}</b><br><span class="muted num">{{ cu.phone or '' }}</span></td><td>{{ a.service_name }}</td>
+<td>{% if a.status == 'booked' %}<span class="tag ok">booked</span>{% elif a.status == 'completed' %}<span class="tag">done</span>{% elif a.status == 'cancelled' %}<span class="tag off">cancelled</span>{% elif a.status == 'no_show' %}<span class="tag warn">no-show</span>{% else %}{{ a.status }}{% endif %}{% if a.calendar_sync_pending %} <span class="tag warn">calendar needs a manual change</span>{% endif %}</td>
+<td>{% if a.status == 'booked' %}
+<form class="inline" method="post" action="/appointments/{{ a.id }}/status"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<button class="secondary small" name="status" value="completed">Done</button>
+<button class="secondary small" name="status" value="no_show">No-show</button></form>{% endif %}</td></tr>
+{% else %}<tr><td colspan="5" class="empty">Nothing here yet.</td></tr>{% endfor %}
+</table></div>{% endblock %}

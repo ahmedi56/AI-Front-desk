@@ -1,0 +1,49 @@
+{% extends "base.html" %}{% block title %}Today{% endblock %}
+{% block body %}
+<div class="page-head"><div><h1>Today</h1><p class="muted">What your front desk handled for you today.</p></div></div>
+
+<section class="status{% if not b.agent_enabled %} off{% endif %}" aria-live="polite">
+  <div class="status-main"><span class="live" aria-hidden="true"></span>
+  {% if b.agent_enabled %}
+    <div><span class="status-title">AI assistant: <span class="tag ok">ON</span></span><span class="status-sub">Answering calls, texts and web chats for you.</span></div>
+  {% else %}
+    <div><span class="status-title">AI assistant: <span class="tag off">OFF - every contact is handed to you</span></span><span class="status-sub">Customers are told a person will get back to them.</span></div>
+  {% endif %}
+  </div>
+  <form method="post" action="/agent/toggle">
+    <input type="hidden" name="csrf_token" value="{{ csrf }}">
+    {% if b.agent_enabled %}<button class="danger" type="submit">Turn OFF (kill switch)</button>{% else %}<button type="submit">Turn ON</button>{% endif %}
+  </form>
+  {% if not b.sms_enabled %}<p class="status-note">Texting is not switched on yet (waiting for carrier approval). Phone calls work.</p>{% endif %}
+</section>
+
+{% set left = setup|rejectattr('done')|list %}
+{% if left %}
+<section class="card setup" aria-label="Setup checklist">
+  <div class="setup-head"><h2>Finish setting up</h2><span class="muted">{{ setup|length - left|length }} of {{ setup|length }} done</span></div>
+  <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="{{ setup|length }}" aria-valuenow="{{ setup|length - left|length }}"><span class="w{{ ((setup|length - left|length) * 100 // setup|length) // 10 * 10 }}"></span></div>
+  <ul class="checklist">
+  {% for step in setup %}<li class="{{ 'done' if step.done else '' }}"><span class="tick" aria-hidden="true"></span><div>{% if step.done %}<span class="txt">{{ step.text }}</span><span class="sr"> (done)</span>{% else %}<a href="{{ step.href }}">{{ step.text }}</a>{% if step.note %}<div class="hint">{{ step.note }}</div>{% endif %}{% endif %}</div></li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<div class="strip">
+  <div><b>{{ today.calls }}</b><span>calls today</span></div>
+  <div><b>{{ today.chats }}</b><span>text/web chats today</span></div>
+  <div><b>{{ today.bookings }}</b><span>bookings today</span></div>
+  <div{% if today.handoffs %} class="hot"{% endif %}><b>{{ today.handoffs }}</b><span>handed to you</span></div>
+  <div><b>{{ today.recovered }}</b><span>missed calls won back</span></div>
+  <div{% if new_leads %} class="hot"{% endif %}><b>{{ new_leads }}</b><span><a href="/leads">new leads</a></span></div>
+</div>
+
+<div class="section"><h2>Next appointments</h2><a href="/appointments">See all</a></div>
+<div class="card table-wrap"><table><tr><th>When</th><th>Service</th></tr>
+{% for a in upcoming %}<tr><td class="when">{{ a.starts_at|localdt(b.timezone) }}</td><td>{{ a.service_name }}</td></tr>{% else %}<tr><td colspan="2" class="empty">Nothing booked yet.</td></tr>{% endfor %}
+</table></div>
+
+<div class="section"><h2>Alerts for you</h2></div>
+<div class="card table-wrap"><table><tr><th>When</th><th>What</th></tr>
+{% for n in notes %}<tr><td class="when">{{ n.created_at|localdt(b.timezone) }}</td><td>{% if n.urgent %}<span class="tag urgent">URGENT</span> {% endif %}{{ n.text }}</td></tr>{% else %}<tr><td colspan="2" class="empty">No alerts.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

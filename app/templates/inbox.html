@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}Inbox{% endblock %}
+{% block body %}
+<div class="page-head"><div><h1>Inbox</h1><p class="muted">Every call, text and web chat. Open one to read it.</p></div></div>
+<div class="card table-wrap"><table><tr><th>When</th><th>Who</th><th>Channel</th><th>Status</th></tr>
+{% for c in convs %}{% set cu = custs.get(c.customer_id) %}
+<tr><td class="when"><a class="row-link" href="/inbox/{{ c.id }}">{{ c.last_activity_at|localdt(b.timezone) }}</a></td>
+<td>{{ cu.name or cu.phone or 'Web visitor' }}</td><td><span class="tag">{{ {'voice': 'call', 'sms': 'text', 'web': 'web chat'}.get(c.channel, c.channel) }}</span></td>
+<td>{% if c.status == 'handed_off' %}<span class="tag warn">needs a person</span>{% elif c.booked %}<span class="tag ok">booked</span>{% else %}<span class="muted">{{ c.status }}</span>{% endif %}</td></tr>
+{% else %}<tr><td colspan="4" class="empty">No conversations yet. When a customer calls, texts or chats, it shows up here.</td></tr>{% endfor %}
+</table></div>{% endblock %}

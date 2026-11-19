@@ -1,0 +1,25 @@
+{% extends "base.html" %}{% block title %}Log in{% endblock %}
+{% block page %}
+<div class="auth">
+  <div class="auth-side">
+    <div class="brand"><span class="brand-mark">AI</span><span class="brand-name">AI Front Desk</span></div>
+    <div>
+      <h2>Every call, text and chat answered. Even when you are on a job.</h2>
+      <p>Your assistant books appointments, saves leads and hands urgent cases to you right away.</p>
+      <ul class="auth-list"><li>Books into your real opening hours</li><li>Sends emergencies to you at once</li><li>Turn it off with one button</li></ul>
+    </div>
+    <p class="hint">Your data stays private to your business.</p>
+  </div>
+  <div class="auth-main">
+  <div class="narrow">
+    <h1>Log in</h1><p class="muted">Use the email and password you were given.</p>
+    {% if error %}<div class="flash err">{{ error }}</div>{% endif %}
+    <form method="post" action="/login" autocomplete="on">
+    <label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="username">
+    <label for="password">Password</label><input id="password" name="password" type="password" required autocomplete="current-password">
+    <label for="code">6-digit code <span class="hint">(only if you turned on 2-step login)</span></label><input id="code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8">
+    <div class="actions"><button type="submit">Log in</button></div>
+    </form>
+  </div></div>
+</div>
+{% endblock %}

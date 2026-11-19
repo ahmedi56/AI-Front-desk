@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% block title %}Admin{% endblock %}
+{% block body %}<div class="page-head"><div><h1>Businesses</h1><p class="muted">Every client on this server.</p></div></div>
+{% if created %}<div class="flash ok">Done for <b>{{ created }}</b>. {% if temp %}Temporary password (shown ONCE, send it safely): <code>{{ temp }}</code>{% endif %}</div>{% endif %}
+{% if error %}<div class="flash err">{{ error }}</div>{% endif %}
+<div class="card table-wrap"><table><tr><th>Business</th><th>Last 30 days</th><th>Numbers</th><th></th></tr>
+{% for b in businesses %}<tr><td><b>{{ b.name }}</b><br><span class="muted">{{ b.slug }}</span><br>
+{% if b.agent_enabled %}<span class="tag ok">agent on</span>{% else %}<span class="tag off">agent off</span>{% endif %}
+{% if b.sms_enabled %}<span class="tag ok">texts on</span>{% else %}<span class="tag warn">texts off</span>{% endif %}
+{% if ai[b.id].has_key %}<span class="tag ok">AI key ...{{ ai[b.id].hint }}</span>{% else %}<span class="tag warn">no AI key</span>{% endif %}
+{% if ai[b.id].backup_has_key %}<span class="tag ok">backup key ...{{ ai[b.id].backup_hint }}</span>{% endif %}
+<br><a href="/widget/{{ b.slug }}" target="_blank" rel="noopener">Chat</a>{% if demo_site %} | <a href="/demo-site/{{ b.slug }}" target="_blank" rel="noopener">Demo website</a>{% endif %}
+<form method="post" action="/admin/businesses/{{ b.id }}/ai" autocomplete="off" class="mini"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<select name="provider" aria-label="AI provider">{% for k, v in ai_providers.items() %}<option value="{{ k }}"{% if ai[b.id].provider_id == k %} selected{% endif %}>{{ v }}</option>{% endfor %}</select>
+<input name="api_key" type="password" autocomplete="off" placeholder="client's AI key" aria-label="Client's AI key" required>
+<input name="model" placeholder="model (Gemini only)" aria-label="Model" value="{{ ai[b.id].model }}">
+<button class="secondary small">Save AI key</button></form></td>
+<td>{{ convs.get(b.id, 0) }} conversations<br>cost ${{ '%.2f'|format(cost.get(b.id, 0)) }}</td>
+<td><form method="post" action="/admin/businesses/{{ b.id }}/numbers"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<input name="voice_number" value="{{ b.inbound_number or '' }}" placeholder="voice number +1..."><input name="sms_number" value="{{ b.sms_number or '' }}" placeholder="text number +1...">
+<label class="plain"><input type="checkbox" class="auto" name="sms_enabled" value="1" {% if b.sms_enabled %}checked{% endif %}> carrier registration (10DLC) approved</label>
+<button class="secondary small">Save numbers</button></form></td>
+<td><form class="inline" method="post" action="/admin/businesses/{{ b.id }}/agent"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="secondary small">{{ 'Turn agent off' if b.agent_enabled else 'Turn agent on' }}</button></form>
+<form class="inline" method="post" action="/admin/businesses/{{ b.id }}/reset-password"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="secondary small">New owner password</button></form></td></tr>
+{% else %}<tr><td colspan="4" class="empty">No businesses yet. Add your first client below.</td></tr>{% endfor %}</table></div>
+<div class="page-head" id="prospects"><div><h2>Prospects</h2><p class="muted">Business owners who filled in the form on your product page. Newest first.</p></div></div>
+<div class="card table-wrap"><table><tr><th>When</th><th>Who</th><th>Contact</th><th>Message</th><th></th></tr>
+{% for pr in prospects %}<tr><td class="when">{{ pr.created_at|localdt }}</td>
+<td><b>{{ pr.name }}</b><br><span class="muted">{{ pr.business_name }}</span></td>
+<td><a href="mailto:{{ pr.email }}">{{ pr.email }}</a>{% if pr.phone %}<br>{{ pr.phone }}{% endif %}{% if pr.website %}<br><span class="muted">{{ pr.website }}</span>{% endif %}</td>
+<td>{{ pr.message or '' }}</td>
+<td>{% if pr.status == 'contacted' %}<span class="tag ok">contacted</span>{% else %}<span class="tag warn">new</span>
+<form class="inline" method="post" action="/admin/prospects/{{ pr.id }}/contacted"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="secondary small">Mark contacted</button></form>{% endif %}</td></tr>
+{% else %}<tr><td colspan="5" class="empty">No prospects yet. Share your product page (/product) to get the first one.</td></tr>{% endfor %}</table></div>
+<div class="card"><h2>Add a business</h2><form method="post" action="/admin/businesses"><input type="hidden" name="csrf_token" value="{{ csrf }}"><div class="row">
+<div><label>Name</label><input name="name" required></div><div><label>Short name (letters, numbers, dashes)</label><input name="slug" required></div>
+<div><label>Owner email</label><input name="owner_email" type="email" required></div><div><label>Time zone</label><input name="timezone" value="America/Chicago"></div>
+<div><label>Owner phone (handoffs)</label><input name="handoff_phone"></div><div><label>Voice number (+1...)</label><input name="voice_number"></div></div>
+<p><button type="submit">Create business and owner login</button></p></form></div>
+{% endblock %}

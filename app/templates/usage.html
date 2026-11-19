@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block title %}Costs{% endblock %}
+{% block body %}
+<div class="page-head"><div><h1>What the assistant cost (last 30 days)</h1><p class="muted">Estimates from our own counters.</p></div></div>
+<div class="strip">
+<div><b>${{ '%.2f'|format(total) }}</b><span>total cost</span></div>
+<div><b>{{ n_calls }}</b><span>calls</span></div>
+<div><b>${{ '%.3f'|format(per_call) }}</b><span>per call</span></div>
+<div><b>{{ n_chats }}</b><span>text/web chats</span></div>
+<div><b>${{ '%.3f'|format(per_chat) }}</b><span>per chat</span></div>
+<div><b>{{ '{:,.0f}'.format(by_kind.get('llm', (0,0))[0]) }}</b><span>AI tokens</span></div></div>
+<div class="section"><h2>Breakdown</h2></div>
+<div class="card table-wrap"><table><tr><th>Item</th><th>Amount</th><th>Cost</th></tr>
+<tr><td>AI tokens</td><td class="num">{{ '{:,.0f}'.format(by_kind.get('llm', (0,0))[0]) }}</td><td class="num">${{ '%.3f'|format(by_kind.get('llm', (0,0))[1]) }}</td></tr>
+<tr><td>Answers from the backup AI <span class="hint">(your main AI was busy)</span></td><td class="num">{{ '%.0f'|format(by_kind.get('llm_backup', (0,0))[0]) }}</td><td class="num">$0.000</td></tr>
+<tr><td>Call minutes</td><td class="num">{{ '%.1f'|format(by_kind.get('call_seconds', (0,0))[0] / 60) }}</td><td class="num">${{ '%.3f'|format(by_kind.get('call_seconds', (0,0))[1]) }}</td></tr>
+<tr><td>Texts sent</td><td class="num">{{ '%.0f'|format(by_kind.get('sms_out', (0,0))[0]) }}</td><td class="num">${{ '%.3f'|format(by_kind.get('sms_out', (0,0))[1]) }}</td></tr>
+<tr><td>Texts received</td><td class="num">{{ '%.0f'|format(by_kind.get('sms_in', (0,0))[0]) }}</td><td class="num">${{ '%.3f'|format(by_kind.get('sms_in', (0,0))[1]) }}</td></tr>
+</table></div>
+<p class="muted">These are estimates from our own counters. Your real bills from the phone and AI companies are the final numbers.</p>
+{% endblock %}

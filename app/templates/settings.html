@@ -1,0 +1,94 @@
+{% extends "base.html" %}{% block title %}Settings</div></div>
+{% endblock %}
+{% block body %}<div class="page-head"><div><h1>Settings</h1><p class="muted">What your assistant knows. It only says what you write here.</p></div></div>
+{% if saved %}<div class="flash ok">{{ {"ai": "AI key saved.", "ai-removed": "AI key removed.", "ai-backup": "Backup AI key saved.", "ai-backup-removed": "Backup AI key removed.", "report": "Report sent to your email. It is also on your Today page.", "report-stored": "The email could not be sent (email is not set up on this server yet). The report is on your Today page."}.get(saved, "Saved.") }}</div>{% endif %}{% if error %}<div class="flash err">{{ error }}</div>{% endif %}
+<div class="settings">
+<nav class="toc" aria-label="Settings sections"><a href="#business">Business</a><a href="#hours">Opening hours</a><a href="#faq">Common questions</a><a href="#texting">Texting and data</a><a href="#services">Services and prices</a><a href="#ai">AI account</a><a href="#chat">Website chat</a><a href="#calendar">Calendar</a><a href="#security">Security</a></nav>
+<div>
+<form method="post" action="/settings/weekly-report/send" id="weekly-now"><input type="hidden" name="csrf_token" value="{{ csrf }}"></form>
+<form method="post" action="/settings"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<div class="card" id="business"><h2>Business</h2>
+<div class="row"><div><label>Phone for handoffs and alerts</label><input name="handoff_phone" value="{{ b.handoff_phone or '' }}"></div>
+<div><label>Email for reports</label><input name="owner_email" type="email" value="{{ b.owner_email or '' }}"></div>
+<div><label>Time zone</label><input name="timezone" value="{{ b.timezone }}"></div></div>
+<input type="hidden" name="weekly_report_shown" value="1">
+<label class="plain"><input type="checkbox" class="auto" name="weekly_report" value="1" {% if b.weekly_report_enabled is not sameas false %}checked{% endif %}> Send me a weekly report by email</label>
+<p class="hint">Every Monday at 8 AM: customers answered, visits booked, leads saved. No report in a week with no customers.</p>
+<p><button type="submit" class="secondary small" form="weekly-now">Send me a report of the last 7 days now</button></p>
+<label>Address</label><input name="address" value="{{ (b.facts or {}).get('address', '') }}">
+<label>Areas you serve</label><input name="areas" value="{{ (b.facts or {}).get('areas', '') }}">
+<label>Policies <span class="hint">(cancellation, payment, warranty. The assistant may only say what you write here.)</span></label><textarea name="policies">{{ (b.facts or {}).get('policies', '') }}</textarea>
+<label>Emergency note <span class="hint">(shown to the assistant for urgent cases)</span></label><input name="emergency_note" value="{{ (b.facts or {}).get('emergency_note', '') }}">
+<label>Words that mean "urgent" for your business <span class="hint">(comma separated, e.g. burst pipe, flooding, no heat)</span></label><input name="urgent_keywords" value="{{ urgent_keywords }}">
+</div>
+<div class="card" id="hours"><h2>Opening hours</h2><p class="hint">Use 24-hour time like 08:00 and 17:00. Leave empty for closed.</p>
+<div class="table-wrap"><table class="hours">{% for d, n in day_names.items() %}<tr><td>{{ n }}</td>
+<td><input name="{{ d }}_open" value="{{ ((b.hours or {}).get(d) or [['','']])[0][0] }}" placeholder="08:00"></td>
+<td><input name="{{ d }}_close" value="{{ ((b.hours or {}).get(d) or [['','']])[0][1] }}" placeholder="17:00"></td></tr>{% endfor %}</table></div></div>
+<div class="card" id="faq"><h2>Common questions</h2>
+<label>Questions and answers <span class="hint">(format: a line starting Q: then a line starting A:. Leave a blank line between pairs.)</span></label>
+<textarea name="faqs" rows="8">{{ faq_text }}</textarea></div>
+<div class="card" id="texting"><h2>Texting rules and data</h2><div class="row">
+<div><label>Quiet hours start (0-23)</label><input name="quiet_start" type="number" min="0" max="23" value="{{ b.quiet_start }}"></div>
+<div><label>Quiet hours end (0-23)</label><input name="quiet_end" type="number" min="0" max="23" value="{{ b.quiet_end }}"></div>
+<div><label>Delete chats after (days)</label><input name="retention_days" type="number" min="7" max="730" value="{{ b.retention_days }}"></div></div>
+<label>Link where customers leave a review</label><input name="review_link" value="{{ b.review_link or '' }}" placeholder="https://..."></div>
+<div class="savebar"><button type="submit">Save</button><span class="hint">Saves everything above.</span></div></form>
+
+<div class="card" id="services"><h2>Services and prices</h2>
+<p class="hint">Write the price exactly as customers should hear it (for example "$149" or "from $95"). No price = the assistant gives no number.</p>
+<div class="table-wrap"><table><tr><th>Service</th><th>Price</th><th>Minutes</th><th></th></tr>
+{% for s in services %}<tr><td>{{ s.name }}</td><td>{{ s.price_text or '(no price)' }}</td><td>{{ s.duration_min }}</td>
+<td><form class="inline" method="post" action="/settings/services/{{ s.id }}/delete"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="secondary small">Remove</button></form></td></tr>
+{% else %}<tr><td colspan="4" class="empty">No services yet. Add your first one below.</td></tr>{% endfor %}</table></div>
+<form method="post" action="/settings/services"><input type="hidden" name="csrf_token" value="{{ csrf }}"><div class="row">
+<div><label>Name</label><input name="name" required></div><div><label>Price</label><input name="price_text"></div>
+<div><label>Minutes</label><input name="duration_min" type="number" value="60" min="10" max="600"></div></div>
+<label>Short description</label><input name="description"><div class="actions"><button type="submit">Add service</button></div></form></div>
+
+<div class="card" id="ai"><h2>AI account</h2>
+{% if ai_error %}<div class="flash err">{{ ai_error }}</div>{% endif %}
+<p class="hint">Your assistant uses your own free AI account, so your usage and limits are yours alone. Get a free key at console.groq.com (API Keys), then paste it here. We store it locked (encrypted) and never show it again.</p>
+{% if ai.has_key %}
+<p><span class="tag ok">Connected</span> {{ ai.provider }}, key ending in <code>{{ ai.hint }}</code>{% if ai.model %}, model <code>{{ ai.model }}</code>{% endif %}</p>
+<form method="post" action="/settings/ai/remove"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="secondary small">Remove key</button></form>
+{% else %}
+<p><span class="tag warn">No AI key yet</span> {% if ai.shared_ok %}The assistant uses the shared test key for now.{% else %}Until you add one, every new contact is handed to you.{% endif %}</p>
+{% endif %}
+<form method="post" action="/settings/ai" autocomplete="off"><input type="hidden" name="csrf_token" value="{{ csrf }}"><div class="row">
+<div><label for="ai-provider">Provider</label><select id="ai-provider" name="provider">{% for k, v in ai_providers.items() %}<option value="{{ k }}"{% if ai.provider_id == k %} selected{% endif %}>{{ v }}</option>{% endfor %}</select></div>
+<div><label for="ai-key">{{ 'New API key' if ai.has_key else 'API key' }}</label><input id="ai-key" name="api_key" type="password" autocomplete="off" spellcheck="false" required></div>
+<div><label for="ai-model">Model <span class="hint">(Gemini only)</span></label><input id="ai-model" name="model" value="{{ ai.model }}" placeholder="exact name from AI Studio"></div></div>
+<div class="actions"><button type="submit">{{ 'Replace key' if ai.has_key else 'Save key' }}</button></div></form>
+{% if ai.has_key %}
+<div class="subsection" id="ai-backup"><h2>Backup AI key <span class="hint">(optional)</span></h2>
+<p class="hint">If your main AI is busy or down, your assistant asks the backup instead, so customers still get an answer. Use a different company than your main key, for example Groq as main and Gemini as backup. Removing the main key also removes the backup.</p>
+{% if ai.backup_has_key %}
+<p><span class="tag ok">Connected</span> {{ ai.backup_provider }}, key ending in <code>{{ ai.backup_hint }}</code>{% if ai.backup_model %}, model <code>{{ ai.backup_model }}</code>{% endif %}</p>
+<form method="post" action="/settings/ai/backup/remove"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="secondary small">Remove backup key</button></form>
+{% else %}
+<p><span class="tag warn">No backup key</span> If your main AI fails, the customer is handed to you.</p>
+{% endif %}
+<form method="post" action="/settings/ai/backup" autocomplete="off"><input type="hidden" name="csrf_token" value="{{ csrf }}"><div class="row">
+<div><label for="ai-backup-provider">Provider</label><select id="ai-backup-provider" name="provider">{% for k, v in ai_providers.items() %}{% if k != ai.provider_id %}<option value="{{ k }}"{% if ai.backup_provider_id == k %} selected{% endif %}>{{ v }}</option>{% endif %}{% endfor %}</select></div>
+<div><label for="ai-backup-key">{{ 'New backup API key' if ai.backup_has_key else 'Backup API key' }}</label><input id="ai-backup-key" name="api_key" type="password" autocomplete="off" spellcheck="false" required></div>
+<div><label for="ai-backup-model">Model <span class="hint">(Gemini only)</span></label><input id="ai-backup-model" name="model" value="{{ ai.backup_model }}" placeholder="exact name from AI Studio"></div></div>
+<div class="actions"><button type="submit" class="secondary">{{ 'Replace backup key' if ai.backup_has_key else 'Save backup key' }}</button></div></form></div>
+{% endif %}</div>
+
+<div class="card" id="chat"><h2>Website chat</h2>
+<p class="hint">Paste this one line into your website, just before <code>&lt;/body&gt;</code>. A "Chat with us" button appears in the corner. Your web person can do it in two minutes.</p>
+<label for="embed-code">Your code</label>
+<textarea id="embed-code" class="code" readonly rows="2">&lt;script src="{{ base_url }}/static/embed.js" data-business="{{ b.slug }}" async&gt;&lt;/script&gt;</textarea>
+<div class="actions"><a class="btn secondary" href="/widget/{{ b.slug }}" target="_blank" rel="noopener">Open the chat</a>{% if demo_site %}<a class="btn secondary" href="/demo-site/{{ b.slug }}" target="_blank" rel="noopener">See it on a demo website</a>{% endif %}</div></div>
+
+<div class="card" id="calendar"><h2>Calendar</h2>
+{% if b.calendar_kind == 'google' %}<p>Connected to Google Calendar.</p>
+<form method="post" action="/settings/calendar/disconnect"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="secondary">Disconnect</button></form>
+{% elif google_ready %}<p>Bookings are kept in this system. Connect Google Calendar to see them on your phone.</p><a class="btn" href="/settings/calendar/connect">Connect Google Calendar</a>
+{% else %}<p class="muted">Bookings are kept in this system. Google Calendar is not set up on this server yet.</p>{% endif %}</div>
+
+<div class="card" id="security"><h2>Security</h2>
+<form method="post" action="/logout-everywhere"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="secondary">Log out on all devices</button></form></div>
+</div></div>
+{% endblock %}
